@@ -267,6 +267,11 @@
                     Label="help">
                     <AppBarButton.Flyout>
                         <Flyout x:Name="HelpFlyout" Placement="Full" Opening="Flyout_Opened">
+                            <Flyout.FlyoutPresenterStyle>
+                                <Style TargetType="FlyoutPresenter">
+                                    <Setter Property="Background" Value="White"/>
+                                </Style>
+                            </Flyout.FlyoutPresenterStyle>
                             <Grid Margin="4">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -535,7 +540,7 @@
                        Style="{ThemeResource TowerOfHanoiPhoneInfoTextBlockStyle}"/>
             </Grid>
 
-            <StackPanel Grid.Column="4" Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <StackPanel Grid.Column="4" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                 <AppBarButton
                     x:Name="UndoMove"
                     IsCompact="True"
