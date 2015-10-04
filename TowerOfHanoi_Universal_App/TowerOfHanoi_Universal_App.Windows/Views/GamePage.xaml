@@ -218,10 +218,10 @@
             <Rectangle RadiusX="10" RadiusY="10" Height="{Binding Height}" Width="{Binding Width}" AllowDrop="{Binding IsDraggable}" Fill="{Binding Brush}" />
         </DataTemplate>
         <DataTemplate x:Key="Filled300x300ItemTemplate">
-            <Rectangle RadiusX="10" RadiusY="10" Height="{Binding Height}" Width="{Binding Width,Converter={StaticResource DiskWidthConverter},ConverterParameter=15}" AllowDrop="{Binding IsDraggable}" Fill="{Binding Brush}" />
+            <Rectangle RadiusX="10" RadiusY="10" Height="{Binding Height}" Width="{Binding Width,Converter={StaticResource DiskWidthConverter},ConverterParameter=15, Mode=OneWay}" AllowDrop="{Binding IsDraggable}" Fill="{Binding Brush}" />
         </DataTemplate>
         <DataTemplate x:Key="Narrow150x300ItemTemplate">
-            <Rectangle RadiusX="10" RadiusY="10" Height="24" Width="{Binding Width,Converter={StaticResource DiskWidthConverter},ConverterParameter=0}" AllowDrop="{Binding IsDraggable}" Fill="{Binding Brush}" />
+            <Rectangle RadiusX="10" RadiusY="10" Height="24" Width="{Binding Width,Converter={StaticResource DiskWidthConverter},ConverterParameter=0, Mode=OneWay}" AllowDrop="{Binding IsDraggable}" Fill="{Binding Brush}" />
         </DataTemplate>
 
     </Page.Resources>
@@ -264,17 +264,18 @@
                 </AppBarButton>
                 <AppBarButton
                     ToolTipService.ToolTip="Enable/Disable game sounds"
-                    Icon="{Binding GameSettings.IsGameSoundEnabled, Converter={StaticResource IconConverter}}"
+                    Icon="{Binding GameSettings.IsGameSoundEnabled, Converter={StaticResource IconConverter}, Mode=OneWay}"
                     Label="sound"
                     Command="{Binding GameSoundSettingsCommand}"
                     IsCompact="True"/>
                 <AppBarButton
-                          ToolTipService.ToolTip="Undo last move" 
-                          Icon="Undo" 
-                          Label="undo"
-                          IsCompact="True"
-                          IsEnabled="{Binding CanUndoLastMove}"
-                          Command="{Binding UndoLastMoveCommand}"/>
+                    x:Name="BtnUndo"
+                    ToolTipService.ToolTip="Undo last move" 
+                    Icon="Undo" 
+                    Label="undo"
+                    IsCompact="True"
+                    IsEnabled="{Binding CanUndoLastMove}"
+                    Command="{Binding UndoLastMoveCommand}"/>
                 <AppBarButton
                           ToolTipService.ToolTip="Restart level" 
                           Icon="Refresh"
@@ -438,7 +439,7 @@
                                             <StackPanel DataContext="{Binding}" Orientation="Horizontal">
                                                 <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding Level}"/>
                                                 <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding BestMoves}"/>
-                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding PlayerMoves, Converter={StaticResource PlayerMoveConverter}}"/>
+                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding PlayerMoves, Converter={StaticResource PlayerMoveConverter}, Mode=OneWay}"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
@@ -459,7 +460,7 @@
 
     <Grid x:Name="GamePageGrid">
         <Grid.Background>
-            <ImageBrush ImageSource="{Binding GameSettings.GameTheme, Converter={StaticResource ThemeConverter}}" Stretch="UniformToFill" />
+            <ImageBrush ImageSource="{Binding GameSettings.GameTheme, Converter={StaticResource ThemeConverter}, Mode=OneWay}" Stretch="UniformToFill" />
         </Grid.Background>
         <Grid.ChildrenTransitions>
             <TransitionCollection>
@@ -513,19 +514,19 @@
             <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/Cloud2.png" Stretch="Fill" />
                 <TextBlock x:Name="TxtBestMoves"
-                       Text="{Binding BestMoves, Converter={StaticResource GameValueConverter},ConverterParameter=1}"
+                       Text="{Binding BestMoves, Converter={StaticResource GameValueConverter},ConverterParameter=1, Mode=OneWay}"
                        Style="{ThemeResource TowerOfHanoiInfoTextBlockStyle}"/>
             </Grid>
             <Grid Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/Cloud2.png" Stretch="Fill" />
                 <TextBlock x:Name="TxtCurrentLevel"
-                       Text="{Binding CurrentLevel, Converter={StaticResource GameValueConverter},ConverterParameter=2}"
+                       Text="{Binding CurrentLevel, Converter={StaticResource GameValueConverter},ConverterParameter=2, Mode=OneWay}"
                        Style="{ThemeResource TowerOfHanoiInfoTextBlockStyle}"/>
             </Grid>
             <Grid Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/Cloud2.png" Stretch="Fill" />
                 <TextBlock x:Name="TxtPlayerMoves"
-                       Text="{Binding PlayerMoves, Converter={StaticResource GameValueConverter},ConverterParameter=3}"
+                       Text="{Binding PlayerMoves, Converter={StaticResource GameValueConverter},ConverterParameter=3, Mode=OneWay}"
                        Style="{ThemeResource TowerOfHanoiInfoTextBlockStyle}"/>
             </Grid>
         </Grid>
@@ -535,7 +536,7 @@
                       VerticalScrollBarVisibility="Auto"
                       VerticalScrollMode="Auto"
                       ZoomMode="Disabled"
-                      Visibility="{Binding GameSettings.IsPlayerMoveDetailsVisible, Converter={StaticResource BoolToVisibilityConverter}}" 
+                      Visibility="{Binding GameSettings.IsPlayerMoveDetailsVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" 
                       Background="Transparent">
             <ScrollViewer.TopLeftHeader>
                 <TextBlock x:Name="PlayerMoveDetailsLabel"

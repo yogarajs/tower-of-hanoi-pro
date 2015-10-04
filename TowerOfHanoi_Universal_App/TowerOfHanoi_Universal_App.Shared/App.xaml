@@ -7,10 +7,9 @@
     RequestedTheme="Light">
     
     <Application.Resources>
-        <x:String x:Key="AppName">Tower of Hanoi</x:String>
+        <x:String x:Key="AppName">Tower of Hanoi Pro</x:String>
         <!--Tower of Hanoi Converters-->
         <converters:GameConverter x:Key="GameValueConverter"/>
-        <converters:LevelConverter x:Key="LevelConverter"/>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:DiskWidthConverter x:Key="DiskWidthConverter"/>
         <converters:IconConverter x:Key="IconConverter"/>

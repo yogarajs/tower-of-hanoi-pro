@@ -3,11 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using TowerOfHanoi_Universal_App.Common;
 using TowerOfHanoi_Universal_App.Logic;
+using Windows.UI;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using GameState = TowerOfHanoi_Universal_App.Common.Enums.GameState;
@@ -316,7 +318,20 @@ namespace TowerOfHanoi_Universal_App.Views
 
         void SetTheme(GameTheme newTheme)
         {
-            this.BottomAppBar.RequestedTheme = (newTheme == GameTheme.Day) ? ElementTheme.Light : ElementTheme.Dark;
+            switch (newTheme)
+            {
+                case GameTheme.Day:
+                    var black = new SolidColorBrush(Colors.Black);
+                    BtnUndo.Foreground = black;
+                    this.BottomAppBar.RequestedTheme = ElementTheme.Light;
+                    break;
+                case GameTheme.Night:
+                    var white = new SolidColorBrush(Colors.White);
+                    BtnUndo.Foreground = white;
+                    this.BottomAppBar.RequestedTheme = ElementTheme.Dark;
+                    break;
+            }
+            PlayerMoveDetails.ChangeView(PlayerMoveDetails.ScrollableWidth, PlayerMoveDetails.ScrollableHeight, null, false);
         }
 
         #endregion    

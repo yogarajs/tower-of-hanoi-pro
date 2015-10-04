@@ -154,7 +154,7 @@ namespace TowerOfHanoi_Universal_App.Logic
 
         GameSettings LoadAppSettings()
         {
-            ApplicationData.Current.DataChanged += Current_DataChanged;
+            //ApplicationData.Current.DataChanged += Current_DataChanged;
             var roamingSettings = ApplicationData.Current.RoamingSettings;
             if (roamingSettings.Values[Constants.IS_PLAYER_MOVE_DETAILS_VISIBLE] != null)
                 this.isPlayerMoveDetailsVisible = (bool)roamingSettings.Values[Constants.IS_PLAYER_MOVE_DETAILS_VISIBLE];
