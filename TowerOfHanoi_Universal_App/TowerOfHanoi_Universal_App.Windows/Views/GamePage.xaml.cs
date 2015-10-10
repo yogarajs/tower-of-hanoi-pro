@@ -194,7 +194,7 @@ namespace TowerOfHanoi_Universal_App.Views
                         if (game.GameSettings.IsGameSoundEnabled)
                             LevelCompleted.Play();
                         messageDialgog.Commands.Add(new UICommand(Constants.GOTO_NEXT_LEVEL, new UICommandInvokedHandler(CommandHandler)));
-                        ShowMessage(messageDialgog,Constants.LEVEL_WIN);
+                        ShowMessage(messageDialgog, Constants.LEVEL_WIN);
                         break;
                     case GameState.GameCompleted:
                         if (game.GameSettings.IsGameSoundEnabled)
@@ -230,8 +230,11 @@ namespace TowerOfHanoi_Universal_App.Views
         void ThemeChooserGrid_ItemClick(object sender, ItemClickEventArgs e)
         {
             var newTheme = (GameTheme)Convert.ToInt32((e.ClickedItem as Image).Tag.ToString());
-            this.game.GameSettings.GameTheme = newTheme;
-            SetTheme(newTheme);
+            if (newTheme != game.GameSettings.GameTheme)
+            {
+                game.GameSettings.GameTheme = newTheme;
+                SetTheme(newTheme);
+            }
             ThemeChooser.Hide();
         }
 
@@ -262,6 +265,11 @@ namespace TowerOfHanoi_Universal_App.Views
             messageDialgog.Content = message;
             messageDialgog.Commands.Add(new UICommand(Constants.RATE_AND_REVIEW, new UICommandInvokedHandler(CommandHandler)));
             await messageDialgog.ShowAsync();
+        }
+
+        void BtnUndo_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            PlayerMoveDetails.ChangeView(PlayerMoveDetails.ScrollableWidth, PlayerMoveDetails.ScrollableHeight, null, false);
         }
 
         #endregion
@@ -322,18 +330,17 @@ namespace TowerOfHanoi_Universal_App.Views
             {
                 case GameTheme.Day:
                     var black = new SolidColorBrush(Colors.Black);
-                    BtnUndo.Foreground = black;
+                    BtnUndo.Foreground = BtnGotoPrevLevel.Foreground = BtnGotoNextLevel.Foreground = black;
                     this.BottomAppBar.RequestedTheme = ElementTheme.Light;
                     break;
                 case GameTheme.Night:
                     var white = new SolidColorBrush(Colors.White);
-                    BtnUndo.Foreground = white;
+                    BtnUndo.Foreground = BtnGotoPrevLevel.Foreground = BtnGotoNextLevel.Foreground = white;
                     this.BottomAppBar.RequestedTheme = ElementTheme.Dark;
                     break;
             }
-            PlayerMoveDetails.ChangeView(PlayerMoveDetails.ScrollableWidth, PlayerMoveDetails.ScrollableHeight, null, false);
         }
 
-        #endregion    
+        #endregion
     }
 }

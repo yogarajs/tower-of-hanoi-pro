@@ -52,6 +52,16 @@ namespace TowerOfHanoi_Universal_App.Views
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+            Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+        }
+
+        void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+        {
+            if (MenuPopup.IsOpen)
+            {
+                MenuPopup.IsOpen = false;
+                e.Handled = true;
+            }
         }
 
         #endregion
@@ -216,8 +226,11 @@ namespace TowerOfHanoi_Universal_App.Views
         void ThemeChooserGrid_ItemClick(object sender, ItemClickEventArgs e)
         {
             var newTheme = (GameTheme)Convert.ToInt32((e.ClickedItem as Image).Tag.ToString());
-            this.game.GameSettings.GameTheme = newTheme;
-            SetTheme(newTheme);
+            if (newTheme != game.GameSettings.GameTheme)
+            {
+                game.GameSettings.GameTheme = newTheme;
+                SetTheme(newTheme);
+            }
             ThemeChooser.Hide();
         }
 
@@ -278,7 +291,13 @@ namespace TowerOfHanoi_Universal_App.Views
 
         async void RateAndReviewButtonTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
+            MenuPopup.IsOpen = false;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(Constants.RATE_AND_REVIEW_URL + Windows.ApplicationModel.Store.CurrentApp.AppId));
+        }
+
+        void MenuPopupButtonTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            MenuPopup.IsOpen = false;
         }
 
         #endregion
@@ -346,10 +365,5 @@ namespace TowerOfHanoi_Universal_App.Views
         }
 
         #endregion
-
-        private void RestartButtonTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-            MenuPopup.IsOpen = false;
-        }
     }
 }

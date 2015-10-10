@@ -275,7 +275,8 @@
                     Label="undo"
                     IsCompact="True"
                     IsEnabled="{Binding CanUndoLastMove}"
-                    Command="{Binding UndoLastMoveCommand}"/>
+                    Command="{Binding UndoLastMoveCommand}"
+                    Tapped="BtnUndo_Tapped"/>
                 <AppBarButton
                           ToolTipService.ToolTip="Restart level" 
                           Icon="Refresh"
@@ -285,19 +286,21 @@
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
                 <AppBarButton
-                          ToolTipService.ToolTip="Go to Previous level" 
-                          Icon="Back" 
-                          Label="previous level"
-                          IsCompact="True"
-                          IsEnabled="{Binding CanGoToPreviousLevel}"
-                          Command="{Binding GotoPreviousLevelCommand}"/>
-                <AppBarButton 
-                          ToolTipService.ToolTip="Go to Next level" 
-                          Icon="Forward" 
-                          Label="next level"
-                          IsCompact="True"
-                          IsEnabled="{Binding CanGoToNextLevel}"
-                          Command="{Binding GotoNextLevelCommand}"/>
+                    x:Name="BtnGotoPrevLevel"
+                    ToolTipService.ToolTip="Go to Previous level" 
+                    Icon="Back" 
+                    Label="previous level"
+                    IsCompact="True"
+                    IsEnabled="{Binding CanGoToPreviousLevel}"
+                    Command="{Binding GotoPreviousLevelCommand}"/>
+                <AppBarButton
+                    x:Name="BtnGotoNextLevel"
+                    ToolTipService.ToolTip="Go to Next level" 
+                    Icon="Forward" 
+                    Label="next level"
+                    IsCompact="True"
+                    IsEnabled="{Binding CanGoToNextLevel}"
+                    Command="{Binding GotoNextLevelCommand}"/>
                 <AppBarButton
                     ToolTipService.ToolTip="Choose level" 
                     Icon="Go"

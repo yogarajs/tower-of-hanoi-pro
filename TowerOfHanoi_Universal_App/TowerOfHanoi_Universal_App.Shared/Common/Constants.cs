@@ -24,7 +24,7 @@ namespace TowerOfHanoi_Universal_App.Common
         public const string WARNING = "Cannot place large disk on top of small disk";
         public const string MOVE_DISK = ". Move disk from {0} to {1} \r\n";
         public const string MOVED_DISK = "{0}. Moved disk from Pole {1} to Pole {2}.\r\n";
-        public const string UNDO = "Undid previous move.";
+        public const string UNDO = "------- Undid previous move -------";
         public const string SOURCE_DISK = "sourceDisk";
         public const string SOURCE_POLE = "sourcePole";
         public const string TOTAL_MOVES = "----------------------------------\r\nTotal moves: {0}\r\n----------------------------------";

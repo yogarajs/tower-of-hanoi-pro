@@ -26,10 +26,12 @@
             <Setter Property="Margin" Value="20, 4" />
         </Style>
         <Style x:Key="TowerOfHanoiMenuStyle" TargetType="Line">
-            <Setter Property="StrokeThickness" Value="3"/>
-            <Setter Property="Stroke" Value="Black" />
+            <Setter Property="StrokeThickness" Value="4"/>
+            <Setter Property="Stroke" Value="Black"/>
+            <Setter Property="IsHitTestVisible" Value="True" />
+            <Setter Property="IsTapEnabled" Value="True" />
             <Setter Property="Margin" Value="0.5" />
-            <Setter Property="X1" Value="5"/>
+            <Setter Property="X1" Value="0"/>
             <Setter Property="X2" Value="25"/>
             <Setter Property="Y1" Value="5"/>
             <Setter Property="Y2" Value="5"/>
@@ -305,32 +307,35 @@
                     </AppBarButton.Flyout>
                 </AppBarButton>
                 <AppBarButton Grid.Row="0" Grid.Column="1"
-                    Icon="{Binding GameSettings.IsGameSoundEnabled, Converter={StaticResource IconConverter}, Mode=OneWay}"
-                    Label="sound"
-                    Command="{Binding GameSoundSettingsCommand}"/>
+                              Icon="{Binding GameSettings.IsGameSoundEnabled, Converter={StaticResource IconConverter}, Mode=OneWay}"
+                              Label="sound"
+                              Command="{Binding GameSoundSettingsCommand}"/>
                 <AppBarButton Grid.Row="1" Grid.Column="0"
                               Icon="Undo"
                               Label="undo"
+                              Tapped="MenuPopupButtonTapped"
                               IsEnabled="{Binding CanUndoLastMove}"
                               Command="{Binding UndoLastMoveCommand}">
                 </AppBarButton>
                 <AppBarButton Grid.Row="1" Grid.Column="1"
                               Icon="Refresh"
                               Label="restart"
-                              Tapped="RestartButtonTapped"
+                              Tapped="MenuPopupButtonTapped"
                               Command="{Binding RestartLevelCommand}"/>
                 <AppBarButton Grid.Row="2" Grid.Column="0"
-                          ToolTipService.ToolTip="Go to Previous level" 
-                          Icon="Back" 
-                          Label="previous level"
-                          IsEnabled="{Binding CanGoToPreviousLevel}"
-                          Command="{Binding GotoPreviousLevelCommand}"/>
+                              ToolTipService.ToolTip="Go to Previous level" 
+                              Icon="Back" 
+                              Label="previous level"
+                              Tapped="MenuPopupButtonTapped"
+                              IsEnabled="{Binding CanGoToPreviousLevel}"
+                              Command="{Binding GotoPreviousLevelCommand}"/>
                 <AppBarButton Grid.Row="2" Grid.Column="1"
-                          ToolTipService.ToolTip="Go to Next level" 
-                          Icon="Forward" 
-                          Label="next level"
-                          IsEnabled="{Binding CanGoToNextLevel}"
-                          Command="{Binding GotoNextLevelCommand}"/>
+                              ToolTipService.ToolTip="Go to Next level" 
+                              Icon="Forward" 
+                              Label="next level"
+                              Tapped="MenuPopupButtonTapped"
+                              IsEnabled="{Binding CanGoToNextLevel}"
+                              Command="{Binding GotoNextLevelCommand}"/>
                 <AppBarButton Grid.Row="3" Grid.Column="0"
                           ToolTipService.ToolTip="Choose level" 
                           Icon="Go"
@@ -508,18 +513,23 @@
                 <RowDefinition Height="75"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="50"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel x:Name="MenuStackButton" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Transparent" Tapped="MenuStackButton_Tapped">
-                <Line x:Name="Line1" Style="{ThemeResource TowerOfHanoiMenuStyle}" Tapped="MenuStackButton_Tapped"/>
-                <Line x:Name="Line2" Style="{ThemeResource TowerOfHanoiMenuStyle}" Tapped="MenuStackButton_Tapped"/>
-                <Line x:Name="Line3" Style="{ThemeResource TowerOfHanoiMenuStyle}" Tapped="MenuStackButton_Tapped"/>
-            </StackPanel>
+            <Grid x:Name="MenuStackButton" IsHitTestVisible="True" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Background="Transparent" Tapped="MenuStackButton_Tapped" Canvas.ZIndex="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Line x:Name="Line1" Grid.Row="0" Style="{ThemeResource TowerOfHanoiMenuStyle}" Tapped="MenuStackButton_Tapped"/>
+                <Line x:Name="Line2" Grid.Row="1" Style="{ThemeResource TowerOfHanoiMenuStyle}" Tapped="MenuStackButton_Tapped"/>
+                <Line x:Name="Line3" Grid.Row="2" Style="{ThemeResource TowerOfHanoiMenuStyle}" Tapped="MenuStackButton_Tapped"/>
+            </Grid>
 
             <Grid Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/Cloud2.png" Stretch="Fill" />
