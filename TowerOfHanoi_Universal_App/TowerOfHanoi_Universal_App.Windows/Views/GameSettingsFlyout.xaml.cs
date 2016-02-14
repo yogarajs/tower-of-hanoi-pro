@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Text;
 using TowerOfHanoi_Universal_App.Common;
+using TowerOfHanoi_Universal_App.Logic;
+using TowerOfHanoi_Universal_App.ViewModels;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using TowerOfHanoi_Universal_App.Logic;
 
 namespace TowerOfHanoi_Universal_App.Views
 {
@@ -14,10 +15,8 @@ namespace TowerOfHanoi_Universal_App.Views
 
         public delegate void SettingsDelegate(object sender);
         public event SettingsDelegate SettingsChanged;
-        public bool IsAppbarSticky;
-        public bool IsPlayerMoveDetailsVisible;
-        public bool IsGameSoundEnabled;
         StringBuilder bestMoveDetailText;
+        public GameSettingsViewModel GameSettingsViewModel { get; set; }
 
         #endregion
 
@@ -42,9 +41,7 @@ namespace TowerOfHanoi_Universal_App.Views
 
         void SettingsFlyout_Loaded(object sender, RoutedEventArgs e)
         {
-            this.AppBarVisibilityToggleSwitch.IsOn = IsAppbarSticky;
-            this.PlayerMoveDetailVisibilityToggleSwitch.IsOn = IsPlayerMoveDetailsVisible;
-            this.GameSoundEnabledToggleSwitch.IsOn = IsGameSoundEnabled;
+            this.DataContext = GameSettingsViewModel;
         }
 
         void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

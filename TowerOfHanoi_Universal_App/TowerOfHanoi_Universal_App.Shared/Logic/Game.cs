@@ -255,6 +255,28 @@ namespace TowerOfHanoi_Universal_App.Logic
 
         #endregion
 
+        #region Auto Properties
+
+        /// <summary>
+        /// Gets or sets hours for the level.
+        /// </summary>
+        [DataMember]
+        public int Hours { get; set; }
+
+        /// <summary>
+        /// Gets or sets minutes for the level.
+        /// </summary>
+        [DataMember]
+        public int Minutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets seconds for the level.
+        /// </summary>
+        [DataMember]
+        public int Seconds { get; set; }
+
+        #endregion
+
         #region Game Commands
 
         /// <summary>
@@ -405,6 +427,7 @@ namespace TowerOfHanoi_Universal_App.Logic
             CanUndoLastMove = PlayerMoves > 0;
             PlayerMoveDetails = new List<PlayerMove>();
             PlayerMoveDetailText = new StringBuilder();
+            Hours = Minutes = Seconds = 0;
 
             var disks = new ObservableCollection<Disk>();
             for (var i = 0; i < CurrentLevel; i++)

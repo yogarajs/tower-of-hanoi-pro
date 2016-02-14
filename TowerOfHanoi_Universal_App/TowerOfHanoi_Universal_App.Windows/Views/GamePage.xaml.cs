@@ -27,6 +27,7 @@ namespace TowerOfHanoi_Universal_App.Views
         Game game;
         NavigationHelper navigationHelper;
         LeaderBoard leaderBoard;
+        DispatcherTimer levelTimer;
 
         #endregion
 
@@ -50,12 +51,15 @@ namespace TowerOfHanoi_Universal_App.Views
             this.InitializeComponent();
             game = new Game();
             leaderBoard = new LeaderBoard();
+            levelTimer = new DispatcherTimer();
+            levelTimer.Tick += levelTimer_Tick;
             this.DataContext = game;
             SettingsPane.GetForCurrentView().CommandsRequested += OnCommandsRequested;
             SizeChanged += GamePage_SizeChanged;
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += navigationHelper_LoadState;
             this.navigationHelper.SaveState += navigationHelper_SaveState;
+            Application.Current.Resuming += new EventHandler<Object>(OnResuming);
         }
 
         #endregion
@@ -85,6 +89,27 @@ namespace TowerOfHanoi_Universal_App.Views
 
         #endregion
 
+        void levelTimer_Tick(object sender, object e)
+        {
+            ++game.Seconds;
+            if (game.Seconds == 60)
+            {
+                game.Minutes++;
+                game.Seconds = 0;
+            }
+            if (game.Minutes == 60)
+            {
+                game.Hours++;
+                game.Minutes = 0;
+            }
+            TxtTimer.Text = String.Format("{0:00}:{1:00}:{2:00}", game.Hours, game.Minutes, game.Seconds);
+        }
+
+        void OnResuming(object sender, object e)
+        {
+            levelTimer.Start();
+        }
+
         /// <summary>
         /// Populates the page with content passed during navigation. Any saved state is also
         /// provided when recreating a page from a prior session.
@@ -98,11 +123,13 @@ namespace TowerOfHanoi_Universal_App.Views
         /// session. The state will be null the first time a page is visited.</param>
         void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            levelTimer.Interval = new TimeSpan(0, 0, 1);
             if (e.PageState != null)
             {
                 game = e.PageState[Constants.GAME_STATE] as Game;
                 this.DataContext = game;
             }
+            levelTimer.Start();
         }
 
         /// <summary>
@@ -115,11 +142,13 @@ namespace TowerOfHanoi_Universal_App.Views
         /// serializable state.</param>
         void navigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            levelTimer.Stop();
             e.PageState[Constants.GAME_STATE] = this.DataContext;
         }
 
         void OnCommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
+            levelTimer.Stop();
             args.Request.ApplicationCommands.Add(new SettingsCommand(
             "options", "Options", (handler) => ShowGameSettingsFlyout()));
         }
@@ -240,28 +269,32 @@ namespace TowerOfHanoi_Universal_App.Views
 
         void MessageBoxBtn_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            var tag = (GameState)Convert.ToInt32((sender as Button).Tag.ToString());
             LevelCompleted.Stop();
         }
 
         void Leaderboard_Flyout_Opened(object sender, object e)
         {
+            levelTimer.Stop();
             BindLeaderBoard();
         }
 
         void Level_Chooser_Flyout_Opened(object sender, object e)
         {
+            levelTimer.Stop();
             LevelChooserGrid.ItemsSource = game.GetGameLevels();
         }
 
         async void RateAndReviewButtonTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
+            levelTimer.Stop();
             await RateAndReview();
+            levelTimer.Start();
         }
 
         async void ShowMessage(MessageDialog messageDialgog, string message)
         {
-            leaderBoard.UpdateLeaderBoards(game.CurrentLevel, game.PlayerMoves);
+            levelTimer.Stop();
+            leaderBoard.UpdateLeaderBoards(game.CurrentLevel, game.PlayerMoves, game.Hours, game.Minutes, game.Seconds);
             messageDialgog.Content = message;
             messageDialgog.Commands.Add(new UICommand(Constants.RATE_AND_REVIEW, new UICommandInvokedHandler(CommandHandler)));
             await messageDialgog.ShowAsync();
@@ -270,6 +303,16 @@ namespace TowerOfHanoi_Universal_App.Views
         void BtnUndo_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             PlayerMoveDetails.ChangeView(PlayerMoveDetails.ScrollableWidth, PlayerMoveDetails.ScrollableHeight, null, false);
+        }
+
+        void FlyoutClosed(object sender, object e)
+        {
+            levelTimer.Start();
+        }
+
+        void FlyoutOpened(object sender, object e)
+        {
+            levelTimer.Stop();
         }
 
         #endregion
@@ -281,10 +324,19 @@ namespace TowerOfHanoi_Universal_App.Views
             var gameSettingsFlyout = new GameSettingsFlyout();
             gameSettingsFlyout.IconSource = new BitmapImage(new Uri("ms-appx:///Assets/SmallLogo.scale-100.png"));
             gameSettingsFlyout.SettingsChanged += OnGameSettingsChanged;
-            gameSettingsFlyout.IsAppbarSticky = game.GameSettings.IsAppbarSticky;
-            gameSettingsFlyout.IsPlayerMoveDetailsVisible = game.GameSettings.IsPlayerMoveDetailsVisible;
-            gameSettingsFlyout.IsGameSoundEnabled = game.GameSettings.IsGameSoundEnabled;
+            gameSettingsFlyout.Unloaded += GameSettingsFlyout_Unloaded;
+            gameSettingsFlyout.GameSettingsViewModel = new ViewModels.GameSettingsViewModel
+            {
+                IsAppbarSticky = game.GameSettings.IsAppbarSticky,
+                IsPlayerMoveDetailsVisible = game.GameSettings.IsPlayerMoveDetailsVisible,
+                IsGameSoundEnabled = game.GameSettings.IsGameSoundEnabled
+            };
             gameSettingsFlyout.Show();
+        }
+
+        void GameSettingsFlyout_Unloaded(object sender, RoutedEventArgs e)
+        {
+            levelTimer.Start();
         }
 
         void ChangeDataTemplate(DataTemplate dataTemplate)
@@ -312,6 +364,7 @@ namespace TowerOfHanoi_Universal_App.Views
                 default:
                     break;
             }
+            levelTimer.Start();
         }
 
         async void BindLeaderBoard()
@@ -331,11 +384,13 @@ namespace TowerOfHanoi_Universal_App.Views
                 case GameTheme.Day:
                     var black = new SolidColorBrush(Colors.Black);
                     BtnUndo.Foreground = BtnGotoPrevLevel.Foreground = BtnGotoNextLevel.Foreground = black;
+                    TxtTimer.RequestedTheme = ElementTheme.Light;
                     this.BottomAppBar.RequestedTheme = ElementTheme.Light;
                     break;
                 case GameTheme.Night:
                     var white = new SolidColorBrush(Colors.White);
                     BtnUndo.Foreground = BtnGotoPrevLevel.Foreground = BtnGotoNextLevel.Foreground = white;
+                    TxtTimer.RequestedTheme = ElementTheme.Dark;
                     this.BottomAppBar.RequestedTheme = ElementTheme.Dark;
                     break;
             }

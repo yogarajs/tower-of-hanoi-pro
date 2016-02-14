@@ -26,6 +26,7 @@ namespace TowerOfHanoi_Universal_App.Views
         NavigationHelper navigationHelper;
         Game game;
         LeaderBoard leaderBoard;
+        DispatcherTimer levelTimer;
 
         #endregion
 
@@ -48,22 +49,16 @@ namespace TowerOfHanoi_Universal_App.Views
             this.InitializeComponent();
             game = new Game();
             leaderBoard = new LeaderBoard();
+            levelTimer = new DispatcherTimer();
+            levelTimer.Tick += levelTimer_Tick;
             DataContext = game;
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
             Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+            Application.Current.Resuming += new EventHandler<Object>(OnResuming);
         }
-
-        void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
-        {
-            if (MenuPopup.IsOpen)
-            {
-                MenuPopup.IsOpen = false;
-                e.Handled = true;
-            }
-        }
-
+       
         #endregion
 
         #region Events
@@ -98,6 +93,40 @@ namespace TowerOfHanoi_Universal_App.Views
 
         #endregion
 
+        void levelTimer_Tick(object sender, object e)
+        {
+            ++game.Seconds;
+            if (game.Seconds == 60)
+            {
+                game.Minutes++;
+                game.Seconds = 0;
+            }
+            if (game.Minutes == 60)
+            {
+                game.Hours++;
+                game.Minutes = 0;
+            }
+            TxtTimer.Text = String.Format("{0:00}:{1:00}:{2:00}", game.Hours, game.Minutes, game.Seconds);
+        }
+
+        void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+        {
+            if (MenuPopup.IsOpen)
+            {
+                MenuPopup.IsOpen = false;
+                e.Handled = true;
+            }
+            else if (!navigationHelper.CanGoBack())
+            {
+                levelTimer.Stop();
+            }
+        }
+
+        void OnResuming(object sender, object e)
+        {
+            levelTimer.Start();
+        }
+
         /// <summary>
         /// Populates the page with content passed during navigation.  Any saved state is also
         /// provided when recreating a page from a prior session.
@@ -111,11 +140,13 @@ namespace TowerOfHanoi_Universal_App.Views
         /// session.  The state will be null the first time a page is visited.</param>
         void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            levelTimer.Interval = new TimeSpan(0, 0, 1);
             if (e.PageState != null)
             {
                 game = e.PageState[Constants.GAME_STATE] as Game;
                 this.DataContext = game;
             }
+            levelTimer.Start();
         }
 
         /// <summary>
@@ -128,6 +159,7 @@ namespace TowerOfHanoi_Universal_App.Views
         /// serializable state.</param>
         void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            levelTimer.Stop();
             e.PageState[Constants.GAME_STATE] = this.DataContext;
         }
 
@@ -157,7 +189,7 @@ namespace TowerOfHanoi_Universal_App.Views
                 if (game.MoveDisk(sourcePole.Tag.ToString(), targetPole.Tag.ToString()))
                 {
                     if (game.GameSettings.IsGameSoundEnabled)
-                        DiskDrop.Play();
+                        DiskDropSound.Play();
                 }
                 else
                 {
@@ -174,12 +206,12 @@ namespace TowerOfHanoi_Universal_App.Views
                         break;
                     case GameState.LevelCompletedWithBestMoves:
                         if (game.GameSettings.IsGameSoundEnabled)
-                            LevelCompleted.Play();
+                            LevelCompletedSound.Play();
                         ShowMessage(Constants.LEVEL_WIN, Windows.UI.Xaml.Visibility.Collapsed, Windows.UI.Xaml.Visibility.Visible, Windows.UI.Xaml.Visibility.Collapsed, true);
                         break;
                     case GameState.GameCompleted:
                         if (game.GameSettings.IsGameSoundEnabled)
-                            LevelCompleted.Play();
+                            LevelCompletedSound.Play();
                         ShowMessage(Constants.GAME_OVER, Windows.UI.Xaml.Visibility.Collapsed, Windows.UI.Xaml.Visibility.Collapsed, Windows.UI.Xaml.Visibility.Visible, true);
                         break;
                 }
@@ -207,13 +239,9 @@ namespace TowerOfHanoi_Universal_App.Views
             }
         }
 
-        void Flyout_Opened(object sender, object e)
-        {
-            MenuPopup.IsOpen = false;
-        }
-
         void LevelChooserGrid_ItemClick(object sender, ItemClickEventArgs e)
         {
+            MenuPopup.IsOpen = false;
             var newLevel = Convert.ToInt32((e.ClickedItem as string));
             if (newLevel != game.CurrentLevel)
             {
@@ -225,6 +253,7 @@ namespace TowerOfHanoi_Universal_App.Views
 
         void ThemeChooserGrid_ItemClick(object sender, ItemClickEventArgs e)
         {
+            MenuPopup.IsOpen = false;
             var newTheme = (GameTheme)Convert.ToInt32((e.ClickedItem as Image).Tag.ToString());
             if (newTheme != game.GameSettings.GameTheme)
             {
@@ -237,20 +266,19 @@ namespace TowerOfHanoi_Universal_App.Views
         void GameMessagePopup_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             var tag = (GameState)Convert.ToInt32((sender as Button).Tag.ToString());
-            LevelCompleted.Stop();
+            LevelCompletedSound.Stop();
             MessagePopupClosed(tag);
             GameMessagePopup.Hide();
+            levelTimer.Start();
         }
 
         void Leaderboard_Flyout_Opened(object sender, object e)
         {
-            MenuPopup.IsOpen = false;
             BindLeaderBoard();
         }
 
         void Level_Chooser_Flyout_Opened(object sender, object e)
         {
-            MenuPopup.IsOpen = false;
             LevelChooserGrid.ItemsSource = game.GetGameLevels();
         }
 
@@ -258,6 +286,7 @@ namespace TowerOfHanoi_Universal_App.Views
         {
             MenuPopup.IsOpen = true;
             e.Handled = true;
+            levelTimer.Stop();
         }
 
         void GameMessagePopup_Closed(object sender, object e)
@@ -268,6 +297,7 @@ namespace TowerOfHanoi_Universal_App.Views
 
         void PopupBackButtonTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
+            MenuPopup.IsOpen = false;
             var flyoutBackButton = sender as AppBarButton;
             if (flyoutBackButton != null)
             {
@@ -291,7 +321,6 @@ namespace TowerOfHanoi_Universal_App.Views
 
         async void RateAndReviewButtonTapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            MenuPopup.IsOpen = false;
             await Windows.System.Launcher.LaunchUriAsync(new Uri(Constants.RATE_AND_REVIEW_URL + Windows.ApplicationModel.Store.CurrentApp.AppId));
         }
 
@@ -300,15 +329,21 @@ namespace TowerOfHanoi_Universal_App.Views
             MenuPopup.IsOpen = false;
         }
 
+        void MenuPopupClosed(object sender, object e)
+        {
+            levelTimer.Start();
+        }
+
         #endregion
 
         #region Private Methods
 
         void ShowMessage(string message, Windows.UI.Xaml.Visibility warningButtonVisibility, Windows.UI.Xaml.Visibility confirmationButtonVisibility, Windows.UI.Xaml.Visibility btnRateAndReviewVisibility, bool updateLeaderBoard)
         {
+            levelTimer.Stop();
             if (updateLeaderBoard)
             {
-                leaderBoard.UpdateLeaderBoards(game.CurrentLevel, game.PlayerMoves);
+                leaderBoard.UpdateLeaderBoards(game.CurrentLevel, game.PlayerMoves, game.Hours, game.Minutes, game.Seconds);
             }
             TxtMessage.Text = message;
             BtnStackWarning.Visibility = warningButtonVisibility;
@@ -347,6 +382,7 @@ namespace TowerOfHanoi_Universal_App.Views
                     Line3.Stroke = black;
                     UndoMove.Foreground = black;
                     UndoMove.RequestedTheme = ElementTheme.Light;
+                    TxtTimer.RequestedTheme = ElementTheme.Light;
                     break;
                 case GameTheme.Night:
                     var white = new SolidColorBrush(Colors.White);
@@ -355,6 +391,7 @@ namespace TowerOfHanoi_Universal_App.Views
                     Line3.Stroke = white;
                     UndoMove.Foreground = white;
                     UndoMove.RequestedTheme = ElementTheme.Dark;
+                    TxtTimer.RequestedTheme = ElementTheme.Dark;
                     break;
             }
         }
@@ -364,6 +401,6 @@ namespace TowerOfHanoi_Universal_App.Views
             LeaderboardGrid.ItemsSource = await leaderBoard.GetLeaderBoards();
         }
 
-        #endregion
+        #endregion      
     }
 }

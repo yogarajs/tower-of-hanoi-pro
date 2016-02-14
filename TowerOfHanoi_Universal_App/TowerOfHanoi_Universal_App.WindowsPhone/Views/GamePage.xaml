@@ -16,14 +16,16 @@
         <!--Tower of Hanoi Styles-->
         <Style x:Key="TowerOfHanoiLeaderBoardHeaderStyle" TargetType="TextBlock" BasedOn="{StaticResource MessageDialogContentStyle}">
             <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="Width" Value="120" />
-            <Setter Property="Margin" Value="20, 4" />
+            <Setter Property="MinWidth" Value="120" />
+            <Setter Property="Margin" Value="12, 4" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
         <Style x:Key="TowerOfHanoiLeaderBoardTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
             <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyLight}" />
             <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="Width" Value="120" />
-            <Setter Property="Margin" Value="20, 4" />
+            <Setter Property="MinWidth" Value="120" />
+            <Setter Property="Margin" Value="12, 4" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
         <Style x:Key="TowerOfHanoiMenuStyle" TargetType="Line">
             <Setter Property="StrokeThickness" Value="4"/>
@@ -50,7 +52,7 @@
         <!--Tower of Hanoi ListView Style-->
         <Style x:Key="TowerOfHanoiListViewStyle" TargetType="ListView">
             <Setter Property="Padding" Value="2"/>
-            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Margin" Value="10, 2"/>
             <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="TabNavigation" Value="Once"/>
             <Setter Property="AllowDrop" Value="True"/>
@@ -225,7 +227,7 @@
     </Page.Resources>
 
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Margin="5">
+    <Grid x:Name="LayoutRoot" Margin="2">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <ContentThemeTransition/>
@@ -240,12 +242,12 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <MediaElement x:Name="DiskDrop" AutoPlay="False"
+        <MediaElement x:Name="DiskDropSound" AutoPlay="False"
                       Source="ms-appx:///Assets/DiskDrop.wav"/>
-        <MediaElement x:Name="LevelCompleted" AutoPlay="False"
+        <MediaElement x:Name="LevelCompletedSound" AutoPlay="False"
                       Source="ms-appx:///Assets/LevelCompleted.wav"/>
 
-        <Popup x:Name="MenuPopup" IsLightDismissEnabled="True" IsOpen="False">
+        <Popup x:Name="MenuPopup" IsLightDismissEnabled="True" IsOpen="False" Closed="MenuPopupClosed">
             <Grid Background="White">
                 <Grid.Transitions>
                     <TransitionCollection>
@@ -268,7 +270,7 @@
                     Icon="Help"
                     Label="help">
                     <AppBarButton.Flyout>
-                        <Flyout x:Name="HelpFlyout" Placement="Full" Opening="Flyout_Opened">
+                        <Flyout x:Name="HelpFlyout" Placement="Full">
                             <Flyout.FlyoutPresenterStyle>
                                 <Style TargetType="FlyoutPresenter">
                                     <Setter Property="Background" Value="White"/>
@@ -392,7 +394,7 @@
                           Icon="BrowsePhotos"
                           Label="choose theme">
                     <AppBarButton.Flyout>
-                        <Flyout x:Name="ThemeChooser" Placement="Full" Opening="Flyout_Opened">
+                        <Flyout x:Name="ThemeChooser" Placement="Full">
                             <Flyout.FlyoutPresenterStyle>
                                 <Style TargetType="FlyoutPresenter">
                                     <Setter Property="Background" Value="White"/>
@@ -461,33 +463,35 @@
                                               Tapped="PopupBackButtonTapped"
                                               Icon="Back"/>
                                 <TextBlock Margin="2,16,0,0" Grid.Row="0" Grid.Column="1" Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" Text="LEADERBOARDS"/>
-                                <ListView x:Name="LeaderboardGrid"
+                                <GridView x:Name="LeaderboardGrid"
                                           IsHitTestVisible="False"
                                           Grid.Row="1" Grid.Column="1"
-                                          HorizontalAlignment="Center"
-                                          HorizontalContentAlignment="Center">
-                                    <ListView.Header>
-                                        <StackPanel DataContext="{Binding}" Orientation="Horizontal">
+                                          HorizontalAlignment="Stretch"
+                                          HorizontalContentAlignment="Stretch">
+                                    <GridView.Header>
+                                        <StackPanel Orientation="Horizontal">
                                             <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Text="LEVEL"/>
                                             <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Text="BEST MOVES"/>
                                             <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Width="150" Text="PLAYER MOVES"/>
+                                            <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Margin="-25 4" HorizontalAlignment="Center" Text="TIME"/>
                                         </StackPanel>
-                                    </ListView.Header>
-                                    <ListView.ItemContainerStyle>
-                                        <Style TargetType="ListViewItem">
-                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                        </Style>
-                                    </ListView.ItemContainerStyle>
-                                    <ListView.ItemTemplate>
+                                    </GridView.Header>
+                                    <GridView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VariableSizedWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="1"/>
+                                        </ItemsPanelTemplate>
+                                    </GridView.ItemsPanel>
+                                    <GridView.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel DataContext="{Binding}" Orientation="Horizontal">
                                                 <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding Level}"/>
                                                 <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding BestMoves}"/>
-                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding PlayerMoves, Converter={StaticResource PlayerMoveConverter}, Mode=OneWay}"/>
+                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding PlayerMoves}"/>
+                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding Time}"/>
                                             </StackPanel>
                                         </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                    </GridView.ItemTemplate>
+                                </GridView>
                             </Grid>
                         </Flyout>
                     </AppBarButton.Flyout>
@@ -501,7 +505,7 @@
             </Grid>
         </Popup>
 
-        <Grid x:Name="GameInfoGrid" Grid.Row="1" Grid.Column="1" Margin="5, 10"
+        <Grid x:Name="GameInfoGrid" Grid.Row="1" Grid.Column="1" Margin="4, 4"
               HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
             <Grid.ChildrenTransitions>
@@ -511,6 +515,7 @@
             </Grid.ChildrenTransitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="75"/>
+                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32"/>
@@ -562,6 +567,9 @@
                     Command="{Binding UndoLastMoveCommand}">
                 </AppBarButton>
             </StackPanel>
+            <TextBlock x:Name="TxtTimer" Grid.Row="2" Grid.Column="2" 
+                       HorizontalAlignment="Center" VerticalAlignment="Top" 
+                       Style="{ThemeResource SubheaderTextBlockStyle}" Text=""/>
         </Grid>
 
         <Grid x:Name="GameGrid" Grid.Row="2" Grid.Column="0"

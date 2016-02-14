@@ -235,7 +235,7 @@
                           Label="help"
                           IsCompact="True">
                     <AppBarButton.Flyout>
-                        <Flyout>
+                        <Flyout Opened="FlyoutOpened" Closed="FlyoutClosed">
                             <Flyout.FlyoutPresenterStyle>
                                 <Style TargetType="FlyoutPresenter">
                                     <Setter Property="Background" Value="White"/>
@@ -307,7 +307,7 @@
                     Label="choose level"
                     IsCompact="True">
                     <AppBarButton.Flyout>
-                        <Flyout x:Name="LevelChooser" Placement="Top" Opening="Level_Chooser_Flyout_Opened">
+                        <Flyout x:Name="LevelChooser" Placement="Top" Opening="Level_Chooser_Flyout_Opened" Closed="FlyoutClosed">
                             <Flyout.FlyoutPresenterStyle>
                                 <Style TargetType="FlyoutPresenter">
                                     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -355,7 +355,7 @@
                     Label="choose theme"
                     IsCompact="True">
                     <AppBarButton.Flyout>
-                        <Flyout x:Name="ThemeChooser" Placement="Top">
+                        <Flyout x:Name="ThemeChooser" Placement="Top" Opened="FlyoutOpened" Closed="FlyoutClosed">
                             <Flyout.FlyoutPresenterStyle>
                                 <Style TargetType="FlyoutPresenter">
                                     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -404,7 +404,7 @@
                     Label="leaderboards"
                     IsCompact="True">
                     <AppBarButton.Flyout>
-                        <Flyout x:Name="LeaderBoards" Placement="Top" Opening="Leaderboard_Flyout_Opened">
+                        <Flyout x:Name="LeaderBoards" Placement="Top" Opening="Leaderboard_Flyout_Opened" Closed="FlyoutClosed">
                             <Flyout.FlyoutPresenterStyle>
                                 <Style TargetType="FlyoutPresenter">
                                     <Setter Property="Background" Value="White"/>
@@ -430,6 +430,7 @@
                                             <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Text="LEVEL"/>
                                             <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Text="BEST MOVES"/>
                                             <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Width="150" Text="PLAYER MOVES"/>
+                                            <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardHeaderStyle}" Margin="-25 4" HorizontalAlignment="Center" Text="TIME"/>
                                         </StackPanel>
                                     </ListView.Header>
                                     <ListView.ItemContainerStyle>
@@ -442,7 +443,8 @@
                                             <StackPanel DataContext="{Binding}" Orientation="Horizontal">
                                                 <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding Level}"/>
                                                 <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding BestMoves}"/>
-                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding PlayerMoves, Converter={StaticResource PlayerMoveConverter}, Mode=OneWay}"/>
+                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding PlayerMoves}"/>
+                                                <TextBlock Style="{ThemeResource TowerOfHanoiLeaderBoardTextStyle}" Text="{Binding Time}"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
@@ -472,7 +474,7 @@
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="140"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="150"/>
             <RowDefinition Height="75"/>
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
@@ -513,7 +515,10 @@
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
-
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
             <Grid Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/Cloud2.png" Stretch="Fill" />
                 <TextBlock x:Name="TxtBestMoves"
@@ -532,6 +537,10 @@
                        Text="{Binding PlayerMoves, Converter={StaticResource GameValueConverter},ConverterParameter=3, Mode=OneWay}"
                        Style="{ThemeResource TowerOfHanoiInfoTextBlockStyle}"/>
             </Grid>
+      
+            <TextBlock x:Name="TxtTimer" Grid.Row="1" Grid.Column="1" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Style="{ThemeResource SubheaderTextBlockStyle}" Text="Level Time"/>
         </Grid>
 
         <ScrollViewer x:Name="PlayerMoveDetails"

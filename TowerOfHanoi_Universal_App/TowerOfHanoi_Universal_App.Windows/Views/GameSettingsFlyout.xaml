@@ -20,15 +20,15 @@
         <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
 
             <TextBlock Style="{StaticResource BodyTextBlockStyle}" Margin="0,0,0,0" Text="Show player move details"/>
-            <ToggleSwitch x:Name="PlayerMoveDetailVisibilityToggleSwitch" Toggled="ToggleSwitch_Toggled"
+            <ToggleSwitch x:Name="PlayerMoveDetailVisibilityToggleSwitch" IsOn="{Binding IsAppbarSticky, Mode=TwoWay}" Toggled="ToggleSwitch_Toggled"
                           ToolTipService.ToolTip="On makes Player move details visible. "/>
 
             <TextBlock Style="{StaticResource BodyTextBlockStyle}" Margin="0,0,0,0" Text="Make App bar sticky"/>
-            <ToggleSwitch x:Name="AppBarVisibilityToggleSwitch" Toggled="ToggleSwitch_Toggled" 
+            <ToggleSwitch x:Name="AppBarVisibilityToggleSwitch" IsOn="{Binding IsPlayerMoveDetailsVisible, Mode=TwoWay}" Toggled="ToggleSwitch_Toggled" 
                           ToolTipService.ToolTip="On makes Appbar sticky i.e. it won't hide Appbar when player tapped/clicked anywhere in the app, however if player right clicks, app bar will hide."/>
 
             <TextBlock Style="{StaticResource BodyTextBlockStyle}" Margin="0,0,0,0" Text="Enable game sounds"/>
-            <ToggleSwitch x:Name="GameSoundEnabledToggleSwitch" Toggled="ToggleSwitch_Toggled" 
+            <ToggleSwitch x:Name="GameSoundEnabledToggleSwitch" IsOn="{Binding IsGameSoundEnabled, Mode=TwoWay}" Toggled="ToggleSwitch_Toggled" 
                           ToolTipService.ToolTip="On makes Game sounds enabled. "/>
         </StackPanel>
 
